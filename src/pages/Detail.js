@@ -7,9 +7,19 @@ const Detail = () => {
   const [newLockId, setNewLockId] = useState('');
 
   useEffect(() => {
-    fetchUsers();
-    fetchLocks();
-  }, []);
+const fetchLocks = async () => {
+try {
+const response = await fetch('http://localhost:5000/locks');
+const data = await response.json();
+setLocks(data);
+} catch (error) {
+console.error('Error fetching locks:', error);
+}
+};
+
+fetchLocks();
+}, []);
+
 
   const fetchUsers = async () => {
     try {
@@ -174,6 +184,30 @@ const Detail = () => {
             ))}
           </tbody>
         </table>
+		<div>
+		
+<h2>Locks</h2>
+<table>
+<thead>
+<tr>
+<th>Lock ID</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{locks.map((lock) => (
+<tr key={lock.id}>
+<td>{lock.id}</td>
+<td>{lock.isOpen ? 'Open' : 'Closed'}</td>
+<td>
+<Link to={`/lock/${lock.id}`}>View Details</Link> {/* Button to redirect */}
+</td>
+</tr>
+))}
+</tbody>
+</table>
+</div>
 
         <h3>Add New Lock</h3>
         <input

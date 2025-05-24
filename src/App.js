@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Detail from './pages/Detail';
 import Form from './pages/Form';
+import LockDetail from './pages/LockDetail'; // Import the new component
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -25,6 +26,7 @@ return (
 <Route path="/" element={<Home />} />
 <Route path="/detail" element={<Detail />} />
 <Route path="/form" element={<Form setCurrentUser={setCurrentUser} />} />
+<Route path="/lock/:lockId" element={<LockDetail />} /> {/* Route for Lock Detail */}
 </Routes>
 </Router>
 );
