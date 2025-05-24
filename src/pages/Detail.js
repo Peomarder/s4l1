@@ -13,7 +13,7 @@ const Detail = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users');
+      const response = await fetch('http://localhost:5000/users');
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -23,7 +23,7 @@ const Detail = () => {
 
   const fetchLocks = async () => {
     try {
-      const response = await fetch('http://localhost:3000/locks');
+      const response = await fetch('http://localhost:5000/locks');
       const data = await response.json();
       setLocks(data);
     } catch (error) {
@@ -33,7 +33,7 @@ const Detail = () => {
 
   const addUser = async (username) => {
     try {
-      const response = await fetch('http://localhost:3000/users', {
+      const response = await fetch('http://localhost:5000/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const Detail = () => {
 
   const updateLockStatus = async (lockId, isOpen) => {
     try {
-      const response = await fetch(`http://localhost:3000/locks/${lockId}`, {
+      const response = await fetch(`http://localhost:5000/locks/${lockId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const Detail = () => {
 
   const deleteUser = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3000/users/${userId}`, {
+      const response = await fetch(`http://localhost:5000/users/${userId}`, {
         method: 'DELETE',
       });
 
@@ -94,7 +94,7 @@ const Detail = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/locks', {
+      const response = await fetch('http://localhost:5000/locks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const Detail = () => {
 
   const deleteLock = async (lockId) => {
     try {
-      const response = await fetch(`http://localhost:3000/locks/${lockId}`, {
+      const response = await fetch(`http://localhost:5000/locks/${lockId}`, {
         method: 'DELETE',
       });
 
