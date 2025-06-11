@@ -19,17 +19,19 @@ setCurrentUser(user);
 }
 }, []);
 
-return (
-<Router>
-<Navbar currentUser={currentUser} />
-<Routes>
-<Route path="/landing" element={<Home />} />
-<Route path="/" element={<Detail />} />
-<Route path="/add" element={<Form setCurrentUser={setCurrentUser} />} /> //form
-<Route path="/detail/:lockId" element={<LockDetail />} /> {/* Route for Lock Detail */}
-</Routes>
-</Router>
-);
+  return (
+    <Router>
+      <Navbar currentUser={currentUser} />
+      <Routes>
+        <Route path="/landing" element={<Home />} />
+        <Route path="/" element={<Detail />} />
+        <Route path="/add" element={<Form setCurrentUser={setCurrentUser} />} />
+        {/* Corrected route path: */}
+        <Route path="/lock/:lockId" element={<LockDetail />} />
+      </Routes>
+    </Router>
+  );
 };
+
 
 export default App;
