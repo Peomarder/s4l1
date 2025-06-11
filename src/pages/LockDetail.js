@@ -1,6 +1,7 @@
 // src/pages/LockDetail.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './LockDetail.css'; // Import CSS file
 
 const LockDetail = () => {
   const { lockId } = useParams();
@@ -37,22 +38,22 @@ const LockDetail = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 text-center">
-        <p className="text-lg">Loading lock details...</p>
+      <div className="lock-detail-container">
+        <p className="loading-message">Loading lock details...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto p-4">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-          <p className="font-bold">Error</p>
+      <div className="lock-detail-container">
+        <div className="error-alert">
+          <p className="error-title">Error</p>
           <p>{error}</p>
         </div>
         <button 
           onClick={handleBack}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          className="back-button"
         >
           Back to Home
         </button>
@@ -61,33 +62,33 @@ const LockDetail = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-md">
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-2xl font-bold mb-4 text-center">Lock Details</h2>
+    <div className="lock-detail-container">
+      <div className="lock-card">
+        <h2 className="lock-title">Lock Details</h2>
         
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
+        <div className="detail-item">
+          <label className="detail-label">
             Lock ID:
           </label>
-          <p className="text-gray-900 text-xl">{lock.id}</p>
+          <p className="detail-value">{lock.id}</p>
         </div>
         
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
+        <div className="detail-item">
+          <label className="detail-label">
             Status:
           </label>
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${lock.isOpen ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className={`font-semibold ${lock.isOpen ? 'text-green-700' : 'text-red-700'}`}>
+          <div className="status-container">
+            <div className={`status-indicator ${lock.isOpen ? 'status-open' : 'status-closed'}`}></div>
+            <span className={`status-text ${lock.isOpen ? 'status-open-text' : 'status-closed-text'}`}>
               {lock.isOpen ? 'OPEN' : 'CLOSED'}
             </span>
           </div>
         </div>
         
-        <div className="flex justify-center">
+        <div className="button-container">
           <button 
             onClick={handleBack}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="back-button"
           >
             Back to Home
           </button>
