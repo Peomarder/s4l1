@@ -9,7 +9,6 @@ return (
 <li><Link to="/landing">Home</Link></li>
 <li><Link to="/">Index</Link></li>
 <li><Link to="/add">Form</Link></li>
-<li><Link to="/detail">LockDetail</Link></li>
 <li>{currentUser ? `Logged in as: ${currentUser}` : 'Not logged in'}</li>
 </ul>
 </nav>
