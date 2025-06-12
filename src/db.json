@@ -1,13 +1,7 @@
 {
-  "users": [
-  {
-  "id": "fdaa",
-  "username": "1234",
-  "password": "81dc9bdb62d04dc20036dbd8313ed055"
-  }
-  ],
+  "users": [],
   "locks": [
-    { "id": 1, "isOpen": true },
-    { "id": 2, "isOpen": false }
+    { "id": "1", "isOpen": true },
+    { "id": "2", "isOpen": false }
   ]
 }

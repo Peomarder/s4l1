@@ -1,101 +1,47 @@
 // src/pages/LockDetail.js
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './LockDetail.css'; // Import CSS file
 
 const LockDetail = () => {
-  const { lockId } = useParams();
-  const [lock, setLock] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+const { lockId } = useParams(); // Get the lock ID from URL parameters
+const [lock, setLock] = useState(null);
+const navigate = useNavigate(); // For navigation
 
-  useEffect(() => {
-    const fetchLockDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:5000/locks/${lockId}`);
-        
-        if (!response.ok) {
-          throw new Error(`Lock not found (ID: ${lockId})`);
-        }
-        
-        const data = await response.json();
-        setLock(data);
-        setError(null);
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+const fetchLockDetails = async () => {
+try {
+const response = await fetch(`http://localhost:5000/locks/${lockId}`);
+if (response.ok) {
+const data = await response.json();
+setLock(data);
+} else {
+console.error('Error fetching lock details:', await response.text());
+}
+} catch (error) {
+console.error('Error:', error);
+}
+};
 
-    fetchLockDetails();
-  }, [lockId]);
+fetchLockDetails();
+}, [lockId]);
 
-  const handleBack = () => navigate('/');
+const handleBack = () => {
+navigate('/'); // Go back to home or detail page as required
+};
 
-  if (loading) {
-    return (
-      <div className="lock-detail-container">
-        <p className="loading-message">Loading lock details...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="lock-detail-container">
-        <div className="error-alert">
-          <p className="error-title">Error</p>
-          <p>{error}</p>
-        </div>
-        <button 
-          onClick={handleBack}
-          className="back-button"
-        >
-          Back to Home
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="lock-detail-container">
-      <div className="lock-card">
-        <h2 className="lock-title">Lock Details</h2>
-        
-        <div className="detail-item">
-          <label className="detail-label">
-            Lock ID:
-          </label>
-          <p className="detail-value">{lock.id}</p>
-        </div>
-        
-        <div className="detail-item">
-          <label className="detail-label">
-            Status:
-          </label>
-          <div className="status-container">
-            <div className={`status-indicator ${lock.isOpen ? 'status-open' : 'status-closed'}`}></div>
-            <span className={`status-text ${lock.isOpen ? 'status-open-text' : 'status-closed-text'}`}>
-              {lock.isOpen ? 'OPEN' : 'CLOSED'}
-            </span>
-          </div>
-        </div>
-        
-        <div className="button-container">
-          <button 
-            onClick={handleBack}
-            className="back-button"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+return (
+<div>
+{lock ? (
+<>
+<h2>Lock Details - ID: {lock.id}</h2>
+<p>Status: {lock.isOpen ? 'Open' : 'Closed'}</p>
+<button onClick={handleBack}>Back to Home</button>
+</>
+) : (
+<p>Loading lock details...</p>
+)}
+</div>
+);
 };
 
 export default LockDetail;
