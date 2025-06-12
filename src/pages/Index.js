@@ -171,7 +171,7 @@ return (
 <button onClick={() => updateLockStatus(lock.id, lock.isOpen)}>Toggle Status</button>
 <button onClick={() => deleteLock(lock.id)}>Delete Lock</button>
 {/* Link to view lock details */}
-<Link to={`/lock/${lock.id}`}>View Details</Link>
+<Link to={`/detail/${lock.id}`}>View Details</Link>
 </td>
 </tr>
 ))}
