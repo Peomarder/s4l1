@@ -14,7 +14,7 @@ const LockDetail = () => {
     const fetchLockDetails = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/locks/${lockId}`);
+        const response = await fetch(`/api/locks/${lockId}`);
         
         if (!response.ok) {
           throw new Error(`Lock not found (ID: ${lockId})`);
