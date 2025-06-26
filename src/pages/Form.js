@@ -20,7 +20,7 @@ const Form = ({ setCurrentUser }) => {
 
     try {
       // Send a POST request to the JSON server to add the user
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch('http://217.71.129.139:4821/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
