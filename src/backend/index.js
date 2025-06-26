@@ -1,26 +1,43 @@
 // /var/www/lock-api/index.js
 const express = require('express');
 const cors = require('cors');
+// Add to the top of index.js
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const { Pool } = require('pg');
 const app = express();
 const port = 5000;
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: 'lockuser',
-  password: 'your_secure_password',
+  user: 'postgres',
+  password: '1',
   host: 'localhost',
-  database: 'lockdb',
+  database: 'db',
   port: 5432,
 });
 
 app.use(cors());
 app.use(express.json());
 
-// Database initialization function
-const initializeDatabase = async () => {
+
+
+// Add this after creating the pool
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
+
+// Database initialization
+const initializeDB = async () => {
   try {
-    // Create users table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -30,7 +47,6 @@ const initializeDatabase = async () => {
       )
     `);
     
-    // Create locks table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS locks (
         id VARCHAR(255) PRIMARY KEY,
@@ -41,17 +57,16 @@ const initializeDatabase = async () => {
     
     console.log('Database tables initialized');
   } catch (err) {
-    console.error('Database initialization error:', err);
+    console.error('Database init error:', err);
   }
 };
 
-// Initialize DB on startup
-initializeDatabase();
+initializeDB();
 
-// User Endpoints
+// USER ENDPOINTS
 app.get('/api/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, username, created_at FROM users');
+    const result = await pool.query('SELECT id, username FROM users');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -62,7 +77,7 @@ app.post('/api/users', async (req, res) => {
   const { username, password } = req.body;
   
   if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
+    return res.status(400).json({ error: 'Username and password required' });
   }
 
   try {
@@ -73,15 +88,19 @@ app.post('/api/users', async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (err) {
     if (err.code === '23505') {
-      return res.status(409).json({ error: 'Username already exists' });
+      return res.status(409).json({ error: 'Username exists' });
     }
     res.status(500).json({ error: err.message });
   }
 });
 
 app.delete('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
   
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
+
   try {
     const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING id', [id]);
     
@@ -89,16 +108,16 @@ app.delete('/api/users/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json({ message: 'User deleted successfully' });
+    res.json({ message: `User ${id} deleted` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Lock Endpoints
+// LOCK ENDPOINTS
 app.get('/api/locks', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, is_open, created_at FROM locks');
+    const result = await pool.query('SELECT id, is_open FROM locks');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -106,10 +125,10 @@ app.get('/api/locks', async (req, res) => {
 });
 
 app.get('/api/locks/:lockId', async (req, res) => {
-  const { lockId } = req.params;
+  const lockId = req.params.lockId;
   
   try {
-    const result = await pool.query('SELECT id, is_open, created_at FROM locks WHERE id = $1', [lockId]);
+    const result = await pool.query('SELECT id, is_open FROM locks WHERE id = $1', [lockId]);
     
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Lock not found' });
@@ -125,31 +144,31 @@ app.post('/api/locks', async (req, res) => {
   const { id } = req.body;
   
   if (!id) {
-    return res.status(400).json({ error: 'Lock ID is required' });
+    return res.status(400).json({ error: 'Lock ID required' });
   }
-  
+
   try {
     const result = await pool.query(
-      'INSERT INTO locks (id, is_open) VALUES ($1, $2) RETURNING id, is_open',
-      [id, false]
+      'INSERT INTO locks (id) VALUES ($1) RETURNING id, is_open',
+      [id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
     if (err.code === '23505') {
-      return res.status(409).json({ error: 'Lock ID already exists' });
+      return res.status(409).json({ error: 'Lock ID exists' });
     }
     res.status(500).json({ error: err.message });
   }
 });
 
 app.put('/api/locks/:lockId', async (req, res) => {
-  const { lockId } = req.params;
+  const lockId = req.params.lockId;
   const { isOpen } = req.body;
   
   if (typeof isOpen !== 'boolean') {
-    return res.status(400).json({ error: 'isOpen must be a boolean value' });
+    return res.status(400).json({ error: 'isOpen must be boolean' });
   }
-  
+
   try {
     const result = await pool.query(
       'UPDATE locks SET is_open = $1 WHERE id = $2 RETURNING id, is_open',
@@ -167,7 +186,7 @@ app.put('/api/locks/:lockId', async (req, res) => {
 });
 
 app.delete('/api/locks/:lockId', async (req, res) => {
-  const { lockId } = req.params;
+  const lockId = req.params.lockId;
   
   try {
     const result = await pool.query('DELETE FROM locks WHERE id = $1 RETURNING id', [lockId]);
@@ -176,7 +195,7 @@ app.delete('/api/locks/:lockId', async (req, res) => {
       return res.status(404).json({ error: 'Lock not found' });
     }
     
-    res.json({ message: 'Lock deleted successfully' });
+    res.json({ message: `Lock ${lockId} deleted` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
