@@ -1,0 +1,55 @@
+Core Tables:
+
+user_privileges
+
+id_privilege (PK)
+
+name
+
+users
+
+id_user (PK)
+
+id_privilege (FK)
+
+name
+
+email
+
+actions
+
+id_action (PK)
+
+name
+
+locks
+
+id_lock (PK)
+
+id_privilege (FK)
+
+is_open
+
+last_modified (auto-timestamp)
+
+log_entries
+
+id_log (PK)
+
+id_user (FK)
+
+id_action (FK)
+
+timestamp
+
+id_lock (FK, optional)
+
+system_log
+
+id_system_log (PK)
+
+id_action (FK)
+
+timestamp
+
+affected_ip
